@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useContext } from "react";
 import {
   createBrowserRouter,
   RouterProvider,
@@ -8,6 +8,7 @@ import {
 } from "react-router-dom";
 import Sidebar from "./components/sidebar/Sidebar";
 import Topbar from "./components/topbar/Topbar";
+import { Context } from "./context/Context";
 import Homepage from "./pages/homepage/Homepage";
 import Login from "./pages/login/Login";
 import Register from "./pages/register/Register";
@@ -16,7 +17,8 @@ import Single from "./pages/single/Single";
 import Write from "./pages/write/Write";
 
 const App = () => {
-  const currentUser = true;
+  const { currentUser } = useContext(Context);
+
   const Layout = () => {
     return (
       <>
@@ -38,7 +40,7 @@ const App = () => {
   };
 
   const ProtectedRoute = ({ children }) => {
-    if (!currentUser) {
+    if (currentUser) {
       return <Navigate to="/login" />;
     }
 

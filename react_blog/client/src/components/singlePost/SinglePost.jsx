@@ -1,89 +1,106 @@
 import "./singlePost.css";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useContext, useEffect } from "react";
+import { Context } from "../../context/Context";
+import axios from "axios";
+import { useState } from "react";
 
 const SinglePost = () => {
+  const location = useLocation();
+  const path = location.pathname.split("/")[2];
+  const [post, setPost] = useState({});
+  const PF = "http://localhost:5000/images/";
+  const { user } = useContext(Context);
+  const [title, setTitle] = useState("");
+  const [desc, setDesc] = useState("");
+  const [updateMode, setUpdateMode] = useState(false);
+
+  useEffect(() => {
+    const getPost = async () => {
+      const res = await axios.get("/posts/" + path);
+      setPost(res.data);
+      setTitle(res.data.title);
+      setDesc(res.data.desc);
+    };
+    getPost();
+  }, [path]);
+
+  const handleDelete = async () => {
+    try {
+      await axios.delete(`/posts/${post._id}`, {
+        data: { username: user.username },
+      });
+      window.location.replace("/");
+    } catch (err) {}
+  };
+
+  const handleUpdate = async () => {
+    try {
+      await axios.put(`/posts/${post._id}`, {
+        username: user.username,
+        title,
+        desc,
+      });
+      setUpdateMode(false);
+    } catch (err) {}
+  };
+
   return (
     <div className="singlePost">
       <div className="singlePostWrapper">
-        <img
-          src="https://images.pexels.com/photos/11035363/pexels-photo-11035363.jpeg?auto=compress&cs=tinysrgb&w=600"
-          alt=""
-          className="singlePostImg"
-        />
-        <h1 className="singlePostTitle">
-          Lorem ipsum dolor sit amet.
-          <div className="singlePostEdit">
-            <Link className="link" to="/write">
-              <i className="singlePostIcon fa-solid fa-pen-to-square"></i>
-            </Link>
-            <i className="singlePostIcon fa-solid fa-trash"></i>
-          </div>
-        </h1>
+        {post.photo && (
+          <img src={PF + post.photo} alt="" className="singlePostImg" />
+        )}
+        {updateMode ? (
+          <input
+            type="text"
+            value={title}
+            className="singlePostTitleInput"
+            autoFocus
+            onChange={(e) => setTitle(e.target.value)}
+          />
+        ) : (
+          <h1 className="singlePostTitle">
+            {title}
+            {post.username === user?.username && (
+              <div className="singlePostEdit">
+                <i
+                  className="singlePostIcon fa-solid fa-pen-to-square"
+                  onClick={() => setUpdateMode(true)}
+                ></i>
+                <i
+                  className="singlePostIcon fa-solid fa-trash"
+                  onClick={handleDelete}
+                ></i>
+              </div>
+            )}
+          </h1>
+        )}
         <div className="singlePostInfo">
           <span className="singlePostAuthor">
-            Author: <b>Shivam</b>
+            Author:
+            <Link to={`/?user=${post.username}`} className="link">
+              <b>{post.username}</b>
+            </Link>
           </span>
-          <span className="singlePostDate">1 hour ago </span>
+          <span className="singlePostDate">
+            {new Date(post.createdAt).toDateString()}
+          </span>
         </div>
-        <p className="singlePostDesc">
-          Lorem ipsum dolor sit amet consectetur, adipisicing elit. In possimus
-          deserunt fuga dicta porro esse! Sunt, adipisci voluptas! Iste quos
-          voluptatibus, dolore, pariatur commodi tenetur accusantium placeat
-          itaque tempora debitis mollitia, quidem minima? Praesentium est rerum
-          non quaerat id distinctio consectetur quis repellendus, molestias
-          incidunt reprehenderit excepturi culpa dolorem voluptatibus fugiat
-          nisi recusandae dolores iure sequi explicabo quia! Quia nam nisi,
-          facere numquam perspiciatis, fuga dolores, commodi animi iusto qui
-          laborum eius provident incidunt quibusdam eos pariatur labore
-          molestias obcaecati rem minus illo odit. Consequatur consequuntur
-          magni, doloremque ratione id repellendus excepturi aut dolore alias
-          voluptatem debitis cumque sed rerum enim similique facilis aperiam et
-          nesciunt odit amet. Labore ut voluptates esse, provident qui ea minus
-          expedita praesentium sunt, fuga dignissimos voluptatem ipsa iure
-          temporibus, velit officia quae cumque ad dolorum aliquam illum soluta
-          quam? Facilis eum ut magni obcaecati, aliquid consequatur debitis
-          aliquam perferendis ex accusantium, vitae libero animi veritatis
-          tenetur temporibus enim ea delectus nobis vel, deserunt cumque
-          sapiente! Sapiente, facere fugit earum, labore veritatis culpa
-          officiis veniam ipsum et perspiciatis nesciunt magni quis quia maiores
-          deserunt totam in. Voluptatum, omnis necessitatibus? Autem impedit
-          voluptate eligendi, non hic fuga, neque officiis aperiam culpa
-          nesciunt adipisci enim, aut quae accusantium inventore magnam.
-          Accusantium fugiat laborum vitae dicta quam. Explicabo, earum harum
-          omnis alias molestiae corrupti ipsa nisi voluptas obcaecati vero
-          tempore blanditiis doloremque id sapiente non sint facilis soluta
-          dolores consequatur! Beatae expedita et, blanditiis minus facere ab
-          neque repellat nam incidunt. Illum architecto, optio accusamus quas
-          labore corrupti adipisci voluptatum quidem unde eum ratione, nostrum,
-          deserunt neque. Deserunt placeat aspernatur ipsam obcaecati et. Id
-          eaque est, amet magni voluptatibus nam vitae. Consequatur quia esse
-          aperiam consectetur voluptatem ratione, fuga sit quisquam delectus. Ab
-          quisquam incidunt veniam nobis dolorum aut rem saepe laborum suscipit
-          perferendis officiis tenetur nemo nihil enim eaque corporis dicta quo
-          porro, quia dignissimos ducimus voluptatem praesentium consectetur
-          omnis. Quo harum rem culpa corporis animi suscipit ratione laudantium
-          nemo, dolorum voluptas minus cum odit maiores, quae dolore totam.
-          Provident, harum quis! Saepe aut ipsum ea ut suscipit dolore, veniam
-          cum nihil. Asperiores repellendus corporis possimus quo deserunt
-          dolorem quia culpa delectus illo! Ullam necessitatibus ipsa, velit,
-          illum impedit pariatur aperiam alias reiciendis accusamus
-          exercitationem eum deserunt ducimus natus consectetur adipisci
-          assumenda, nisi iste rem nostrum repudiandae maxime? Amet delectus
-          veritatis dignissimos veniam ipsa laudantium sapiente unde, itaque,
-          ipsum debitis accusantium temporibus corporis inventore optio
-          distinctio blanditiis nisi non deserunt officia nihil fugiat nam.
-          Corporis doloremque voluptatem porro explicabo sed ea incidunt ipsa
-          itaque. Cupiditate sapiente consequuntur laboriosam similique laborum
-          sunt obcaecati quia ipsum asperiores exercitationem, expedita delectus
-          veniam? Facilis distinctio impedit rerum! Ab ut sed error, doloremque
-          delectus dolorum maxime vel eveniet porro? Quas nam ad rem voluptate
-          labore fuga! Ipsum accusamus fuga vel id officiis. Ex debitis
-          voluptate asperiores eum soluta tempora doloremque laudantium ab rem
-          vitae fugiat officia repellendus laborum dolorum necessitatibus quia
-          recusandae quam, possimus, doloribus tempore labore? Dolore, aperiam
-          impedit quam fuga non recusandae eos at odio beatae vero nesciunt
-          voluptatem repudiandae!
-        </p>
+        {updateMode ? (
+          <textarea
+            className="singlePostDescInput"
+            value={desc}
+            onChange={(e) => setDesc(e.target.value)}
+          />
+        ) : (
+          <p className="singlePostDesc">{desc}</p>
+        )}
+        {updateMode && (
+          <button className="singlePostButton" onClick={handleUpdate}>
+            Update
+          </button>
+        )}
       </div>
     </div>
   );

@@ -1,15 +1,22 @@
 import "./topbar.css";
 import { Link } from "react-router-dom";
+import { useContext } from "react";
+import { Context } from "../../context/Context";
 
 const Topbar = () => {
-  const user = true;
+  const { user, dispatch } = useContext(Context);
+  const PF = "http://localhost:5000/images/";
+
+  const handleLogout = () => {
+    dispatch({ type: "LOGOUT" });
+  };
   return (
     <div className="top">
       <div className="topLeft">
-        <i class="topIcon fa-brands fa-square-facebook"></i>
-        <i class="topIcon fa-brands fa-square-instagram"></i>
-        <i class="topIcon fa-brands fa-square-twitter"></i>
-        <i class="topIcon fa-brands fa-square-pinterest"></i>
+        <i className="topIcon fa-brands fa-square-facebook"></i>
+        <i className="topIcon fa-brands fa-square-instagram"></i>
+        <i className="topIcon fa-brands fa-square-twitter"></i>
+        <i className="topIcon fa-brands fa-square-pinterest"></i>
       </div>
       <div className="topCenter">
         <ul className="topList">
@@ -34,22 +41,16 @@ const Topbar = () => {
               WRITE
             </Link>
           </li>
-          <li className="topListItem">
-            {user && (
-              <Link className="link" to="/Logout">
-                LOGOUT
-              </Link>
-            )}
+          <li className="topListItem" onClick={handleLogout}>
+            {user && "LOGOUT"}
           </li>
         </ul>
       </div>
       <div className="topRight">
         {user ? (
-          <img
-            className="topImg"
-            src="https://images.pexels.com/photos/1382731/pexels-photo-1382731.jpeg?auto=compress&cs=tinysrgb&w=600"
-            alt=""
-          />
+          <Link to="/settings">
+            <img className="topImg" src={PF + user.profilePic} alt="" />
+          </Link>
         ) : (
           <ul className="topList">
             <li className="topListItem">
@@ -64,7 +65,7 @@ const Topbar = () => {
             </li>
           </ul>
         )}
-        <i class="topSearchIcon fa-solid fa-magnifying-glass"></i>
+        <i className="topSearchIcon fa-solid fa-magnifying-glass"></i>
       </div>
     </div>
   );
